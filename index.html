@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentaControl 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;font-size:15px}
+.hidden{display:none!important}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e3a8a,#1D4ED8,#0ea5e9);padding:1rem}
+.login-card{background:#fff;border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.brand-bar{display:flex;align-items:center;gap:12px;margin-bottom:2rem;justify-content:center}
+.brand-icon{width:48px;height:48px;border-radius:12px;background:#1D4ED8;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+.brand-name{font-size:20px;font-weight:700}.brand-sub{font-size:12px;color:#64748b}
+.fg{margin-bottom:1rem}.fg label{display:block;font-size:13px;color:#64748b;margin-bottom:5px;font-weight:500}
+.fg input{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;color:#1e293b}
+.fg input:focus{outline:none;border-color:#1D4ED8}
+.btn-primary{width:100%;padding:11px;background:#1D4ED8;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:0.5rem}
+.btn-primary:hover{background:#1e40af}
+.btn-primary:disabled{background:#93c5fd;cursor:not-allowed}
+.err{color:#dc2626;font-size:12px;margin-top:8px;text-align:center;min-height:18px}
+.hint-box{background:#eff6ff;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;margin-bottom:1rem;text-align:center}
+.top-bar{background:#1D4ED8;color:#fff;padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.top-bar-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.top-bar-right{display:flex;align-items:center;gap:10px;font-size:13px}
+.logout-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;font-size:13px;cursor:pointer}
+.logout-btn:hover{background:rgba(255,255,255,0.3)}
+.owner-bar{background:#1e40af;color:#bfdbfe;padding:8px 1.5rem;font-size:12px;display:flex;align-items:center;gap:10px}
+.owner-avatar{width:28px;height:28px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.nav-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 1rem;display:flex;gap:2px;overflow-x:auto;position:sticky;top:56px;z-index:99}
+.nav-item{padding:14px;font-size:13px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;color:#64748b;display:flex;align-items:center;gap:6px;font-weight:500}
+.nav-item.active{color:#1D4ED8;border-bottom-color:#1D4ED8}
+.nav-item:hover{color:#1e293b}
+.content{padding:1.25rem;max-width:1100px;margin:0 auto}
+.section-title{font-size:16px;font-weight:600;margin-bottom:1rem;color:#1e293b;display:flex;align-items:center;gap:8px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:1rem}
+.metric-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.25rem}
+.metric-label{font-size:12px;color:#64748b;margin-bottom:4px;font-weight:500}
+.metric-value{font-size:24px;font-weight:700}
+.income{color:#059669}.expense{color:#dc2626}.pos{color:#1D4ED8}.neg{color:#dc2626}.neutral{color:#1e293b}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px}
+.form-row label{font-size:12px;color:#64748b;display:block;margin-bottom:4px;font-weight:500}
+.form-row input,.form-row select{width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b;background:#fff}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:#1D4ED8}
+.btn-add{background:#1D4ED8;color:#fff;border:none;padding:9px 18px;border-radius:9px;font-size:13px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn-add:hover{background:#1e40af}
+.btn-save{background:#059669;color:#fff;border:none;padding:9px 18px;border-radius:9px;font-size:13px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn-cancel{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;padding:9px 18px;border-radius:9px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-sm{padding:5px 9px;font-size:12px;border-radius:7px;cursor:pointer;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;display:inline-flex;align-items:center;gap:4px}
+.btn-edit{border-color:#bfdbfe;color:#1d4ed8;background:#eff6ff}
+.btn-danger{border-color:#fecaca;color:#dc2626;background:#fff}
+.ok{color:#059669;font-size:12px;margin-top:8px;min-height:18px;font-weight:500}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:#64748b;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.05em}
+td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#1e293b}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-airbnb{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.badge-direct{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+.badge-booking{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd}
+.badge-vrbo{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.badge-expedia{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff}
+.badge-facebook{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.badge-whatsapp{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.badge-otro{background:#f8fafc;color:#475569;border:1px solid #e2e8f0}
+.badge-general{background:#faf5ff;color:#7e22ce;border:1px solid #e9d5ff}
+.badge-prop{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.badge-active{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.badge-blocked{background:#fff1f2;color:#dc2626;border:1px solid #fecaca}
+.btn-lock{border-color:#fde68a;color:#92400e;background:#fef3c7}
+.btn-lock:hover{background:#fde68a}
+.btn-unlock{border-color:#bbf7d0;color:#15803d;background:#f0fdf4}
+.btn-unlock:hover{background:#dcfce7}
+.badge-admin{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+.badge-client{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.empty-state{text-align:center;padding:2.5rem;color:#94a3b8;font-size:13px}
+.tab-bar{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.tab{padding:6px 14px;font-size:12px;border:1.5px solid #e2e8f0;border-radius:20px;cursor:pointer;background:#fff;color:#64748b;font-weight:500}
+.tab.active{background:#1D4ED8;color:#fff;border-color:#1D4ED8}
+.chart-wrap{position:relative;width:100%;height:280px}
+.sync-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;background:rgba(255,255,255,0.2);color:#fff}
+.saving-ind{position:fixed;bottom:20px;right:20px;background:#1D4ED8;color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;display:none;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(29,78,216,0.4);z-index:999}
+.saving-ind.show{display:flex}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 0.8s linear infinite;display:inline-block}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:1.75rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.modal-actions{display:flex;gap:8px;margin-top:1rem;justify-content:flex-end}
+.admin-badge{background:#f59e0b;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="brand-bar">
+        <div class="brand-icon"><i class="ti ti-building-estate"></i></div>
+        <div><div class="brand-name">RentaControl</div><div class="brand-sub">Gestión de propiedades · 2026</div></div>
+      </div>
+      <div class="hint-box">Admin: <b>admin</b> / <b>renta2026</b></div>
+      <div class="fg"><label>Usuario</label><input type="text" id="loginUser" placeholder="usuario" autocomplete="username"></div>
+      <div class="fg"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn-primary" id="loginBtn" onclick="doLogin()"><i class="ti ti-login"></i> Ingresar</button>
+      <div class="err" id="loginError"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="hidden">
+  <div class="top-bar">
+    <div class="top-bar-title"><i class="ti ti-building-estate"></i> RentaControl 2026</div>
+    <div class="top-bar-right">
+      <span class="sync-badge" id="syncBadge"><i class="ti ti-cloud-check"></i> Sincronizado</span>
+      <span id="topUserName" style="opacity:0.85"></span>
+      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i> Salir</button>
+    </div>
+  </div>
+  <div class="owner-bar hidden" id="ownerBar">
+    <div class="owner-avatar" id="ownerAvatar">?</div>
+    <span id="ownerBarText"></span>
+  </div>
+  <nav class="nav-bar">
+    <div class="nav-item active" onclick="showTab('dashboard',this)"><i class="ti ti-layout-dashboard"></i> Resumen</div>
+    <div class="nav-item" onclick="showTab('owner',this)"><i class="ti ti-user-circle"></i> Propietario</div>
+    <div class="nav-item" onclick="showTab('properties',this)"><i class="ti ti-building"></i> Propiedades</div>
+    <div class="nav-item" onclick="showTab('income',this)"><i class="ti ti-cash"></i> Ingresos</div>
+    <div class="nav-item" onclick="showTab('expenses',this)"><i class="ti ti-receipt"></i> Gastos</div>
+    <div class="nav-item" onclick="showTab('report',this)"><i class="ti ti-chart-bar"></i> Reportes</div>
+    <div class="nav-item hidden" id="adminNavItem" onclick="showTab('admin',this)"><i class="ti ti-users"></i> Clientes <span class="admin-badge">ADMIN</span></div>
+  </nav>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+      <div class="metric-grid" id="summaryCards"></div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-chart-line"></i> Ingresos vs Gastos 2026</div>
+        <div class="chart-wrap"><canvas id="mainChart" role="img" aria-label="Ingresos vs gastos"></canvas></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+          <div class="section-title" style="margin-bottom:0"><i class="ti ti-arrows-exchange"></i> Flujo de caja</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <label style="font-size:12px;color:#64748b;font-weight:500">Mes:</label>
+            <select id="cashFlowMonth" onchange="renderCashFlow()" style="padding:5px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b;background:#fff">
+              <option value="-1">Todos</option>
+              <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+              <option value="4">Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+              <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+            </select>
+          </div>
+        </div>
+        <div class="metric-grid" id="cashFlowCards"></div>
+        <div id="cashFlowTable"></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-building"></i> Balance por propiedad</div>
+        <div class="table-wrap" id="propSummaryTable"></div>
+      </div>
+    </div>
+
+    <!-- PROPIETARIO -->
+    <div id="tab-owner" class="hidden">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1rem">
+        <div class="card">
+          <div class="section-title"><i class="ti ti-user-circle"></i> Datos del propietario</div>
+          <div class="form-row">
+            <div><label>Cédula / NIT</label><input type="text" id="ownerCedula" placeholder="123456789"></div>
+            <div><label>Nombre completo</label><input type="text" id="ownerName" placeholder="Juan Pérez"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Teléfono</label><input type="text" id="ownerPhone" placeholder="310 000 0000"></div>
+            <div><label>Correo</label><input type="text" id="ownerEmail" placeholder="juan@email.com"></div>
+          </div>
+          <div class="form-row"><div style="grid-column:1/-1"><label>Ciudad</label><input type="text" id="ownerCity" placeholder="Pereira"></div></div>
+          <button class="btn-add" onclick="saveOwner()"><i class="ti ti-device-floppy"></i> Guardar</button>
+          <div class="ok" id="ownerSaved"></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><i class="ti ti-lock"></i> Cambiar contraseña</div>
+          <div class="form-row">
+            <div><label>Nueva contraseña</label><input type="password" id="newPass1" placeholder="••••••••"></div>
+            <div><label>Confirmar</label><input type="password" id="newPass2" placeholder="••••••••"></div>
+          </div>
+          <button class="btn-add" onclick="changePass()"><i class="ti ti-lock-check"></i> Cambiar</button>
+          <div class="ok" id="passSaved"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROPIEDADES -->
+    <div id="tab-properties" class="hidden">
+      <div class="card">
+        <div class="section-title"><i class="ti ti-plus"></i> Registrar propiedad</div>
+        <div class="form-row">
+          <div><label>Nombre / Código</label><input type="text" id="propName" placeholder="Apto 301 - Centro"></div>
+          <div><label>Dirección</label><input type="text" id="propAddress" placeholder="Calle 10 # 5-20"></div>
+          <div><label>Ciudad</label><input type="text" id="propCity" placeholder="Pereira"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Mes adquisición 2026</label><select id="propMonth">
+            <option value="">Seleccionar...</option>
+            <option>Enero</option><option>Febrero</option><option>Marzo</option><option>Abril</option>
+            <option>Mayo</option><option>Junio</option><option>Julio</option><option>Agosto</option>
+            <option>Septiembre</option><option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+          </select></div>
+          <div style="grid-column:span 2"><label>Descripción</label><input type="text" id="propDesc" placeholder="Tipo de propiedad..."></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-add" onclick="addProperty()"><i class="ti ti-plus"></i> Agregar</button>
+        </div>
+        <div class="ok" id="propSaved"></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-building"></i> Mis propiedades</div>
+        <div id="propList"></div>
+      </div>
+    </div>
+
+    <!-- INGRESOS -->
+    <div id="tab-income" class="hidden">
+      <div class="card">
+        <div class="section-title"><i class="ti ti-cash"></i> Registrar ingreso</div>
+        <div class="form-row">
+          <div><label>Mes 2026</label><select id="incMonth">
+            <option value="">Seleccionar...</option>
+            <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+            <option value="4">Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+            <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+          </select></div>
+          <div><label>Propiedad</label><select id="incProp"></select></div>
+          <div><label>Canal / Plataforma</label><select id="incChannel">
+            <option value="Airbnb">Airbnb</option><option value="Directo">Directo</option>
+            <option value="Booking.com">Booking.com</option><option value="VRBO">VRBO</option>
+            <option value="Expedia">Expedia</option><option value="Facebook">Facebook Marketplace</option>
+            <option value="WhatsApp/Referido">WhatsApp / Referido</option><option value="Otro">Otro</option>
+          </select></div>
+        </div>
+        <div class="form-row">
+          <div><label>Medio de pago</label><select id="incPayment">
+            <option value="Transferencia">Transferencia</option><option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta débito">Tarjeta débito</option><option value="Tarjeta crédito">Tarjeta crédito</option>
+            <option value="Nequi">Nequi</option><option value="Daviplata">Daviplata</option>
+            <option value="Cheque">Cheque</option><option value="Otro">Otro</option>
+          </select></div>
+          <div><label>Monto ($)</label><input type="number" id="incAmount" placeholder="0" min="0"></div>
+          <div style="grid-column:span 2"><label>Nota</label><input type="text" id="incNote" placeholder="Descripción breve"></div>
+        </div>
+        <button class="btn-add" onclick="addIncome()"><i class="ti ti-plus"></i> Registrar</button>
+        <div class="ok" id="incSaved"></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-list"></i> Historial de ingresos</div>
+        <div class="tab-bar"><div class="tab active" onclick="filterIncMonth(-1,this)">Todos</div><div id="incMonthTabs" style="display:contents"></div></div>
+        <div class="table-wrap" id="incTable"></div>
+      </div>
+    </div>
+
+    <!-- GASTOS -->
+    <div id="tab-expenses" class="hidden">
+      <div class="card">
+        <div class="section-title"><i class="ti ti-receipt"></i> Registrar gasto</div>
+        <div class="form-row">
+          <div><label>Mes 2026</label><select id="expMonth">
+            <option value="">Seleccionar...</option>
+            <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+            <option value="4">Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+            <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+          </select></div>
+          <div><label>Tipo</label><select id="expType" onchange="toggleExpProp()"><option value="general">General</option><option value="propiedad">Por propiedad</option></select></div>
+          <div id="expPropWrap" class="hidden"><label>Propiedad</label><select id="expProp"></select></div>
+        </div>
+        <div class="form-row">
+          <div><label>Categoría</label><input type="text" id="expCat" placeholder="Mantenimiento..."></div>
+          <div><label>Medio de pago</label><select id="expPayment">
+            <option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option>
+            <option value="Tarjeta débito">Tarjeta débito</option><option value="Tarjeta crédito">Tarjeta crédito</option>
+            <option value="Nequi">Nequi</option><option value="Daviplata">Daviplata</option>
+            <option value="Cheque">Cheque</option><option value="Otro">Otro</option>
+          </select></div>
+          <div><label>Monto ($)</label><input type="number" id="expAmount" placeholder="0" min="0"></div>
+          <div><label>Nota</label><input type="text" id="expNote" placeholder="Descripción breve"></div>
+        </div>
+        <button class="btn-add" onclick="addExpense()"><i class="ti ti-plus"></i> Registrar</button>
+        <div class="ok" id="expSaved"></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-list"></i> Historial de gastos</div>
+        <div class="tab-bar">
+          <div class="tab active" onclick="filterExpType('all',this)">Todos</div>
+          <div class="tab" onclick="filterExpType('general',this)">Generales</div>
+          <div class="tab" onclick="filterExpType('propiedad',this)">Por propiedad</div>
+        </div>
+        <div class="table-wrap" id="expTable"></div>
+      </div>
+    </div>
+
+    <!-- REPORTES -->
+    <div id="tab-report" class="hidden">
+      <div class="metric-grid" id="reportCards"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem">
+        <div class="card">
+          <div class="section-title"><i class="ti ti-chart-donut"></i> Ingresos por canal</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="channelChart" role="img" aria-label="Airbnb vs Directo"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="section-title"><i class="ti ti-chart-bar"></i> Ingresos por propiedad</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="propChart" role="img" aria-label="Por propiedad"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-table"></i> Detalle mensual</div>
+        <div class="table-wrap" id="monthlyDetailTable"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="tab-admin" class="hidden">
+      <div class="card">
+        <div class="section-title"><i class="ti ti-user-plus"></i> Crear nuevo cliente</div>
+        <div class="form-row">
+          <div><label>Usuario</label><input type="text" id="newClientUser" placeholder="cliente1"></div>
+          <div><label>Contraseña</label><input type="text" id="newClientPass" placeholder="clave123"></div>
+          <div><label>Nombre completo</label><input type="text" id="newClientName" placeholder="Nombre del cliente"></div>
+          <div><label>Correo</label><input type="text" id="newClientEmail" placeholder="cliente@email.com"></div>
+        </div>
+        <button class="btn-add" onclick="createClient()"><i class="ti ti-user-plus"></i> Crear cliente</button>
+        <div class="ok" id="clientSaved"></div>
+      </div>
+      <div class="card">
+        <div class="section-title"><i class="ti ti-users"></i> Clientes registrados</div>
+        <div class="table-wrap" id="clientList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALES -->
+<div class="modal-bg" id="modalProp">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-building-edit"></i> Editar propiedad</div>
+    <div class="form-row">
+      <div><label>Nombre</label><input type="text" id="editPropName"></div>
+      <div><label>Dirección</label><input type="text" id="editPropAddress"></div>
+      <div><label>Ciudad</label><input type="text" id="editPropCity"></div>
+    </div>
+    <div class="form-row">
+      <div><label>Mes adquisición</label><select id="editPropMonth">
+        <option value="">Seleccionar...</option>
+        <option>Enero</option><option>Febrero</option><option>Marzo</option><option>Abril</option>
+        <option>Mayo</option><option>Junio</option><option>Julio</option><option>Agosto</option>
+        <option>Septiembre</option><option>Octubre</option><option>Noviembre</option><option>Diciembre</option>
+      </select></div>
+      <div style="grid-column:span 2"><label>Descripción</label><input type="text" id="editPropDesc"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePropModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveEditProperty()"><i class="ti ti-device-floppy"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalInc">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-cash"></i> Editar ingreso</div>
+    <div class="form-row">
+      <div><label>Mes</label><select id="editIncMonth">
+        <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+        <option value="4">Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+        <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+      </select></div>
+      <div><label>Propiedad</label><select id="editIncProp"></select></div>
+      <div><label>Canal</label><select id="editIncChannel">
+        <option value="Airbnb">Airbnb</option><option value="Directo">Directo</option>
+        <option value="Booking.com">Booking.com</option><option value="VRBO">VRBO</option>
+        <option value="Expedia">Expedia</option><option value="Facebook">Facebook Marketplace</option>
+        <option value="WhatsApp/Referido">WhatsApp / Referido</option><option value="Otro">Otro</option>
+      </select></div>
+    </div>
+    <div class="form-row">
+      <div><label>Medio de pago</label><select id="editIncPayment">
+        <option value="Transferencia">Transferencia</option><option value="Efectivo">Efectivo</option>
+        <option value="Tarjeta débito">Tarjeta débito</option><option value="Tarjeta crédito">Tarjeta crédito</option>
+        <option value="Nequi">Nequi</option><option value="Daviplata">Daviplata</option>
+        <option value="Cheque">Cheque</option><option value="Otro">Otro</option>
+      </select></div>
+      <div><label>Monto ($)</label><input type="number" id="editIncAmount" min="0"></div>
+      <div style="grid-column:span 2"><label>Nota</label><input type="text" id="editIncNote"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeIncModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveEditIncome()"><i class="ti ti-device-floppy"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalExp">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-receipt"></i> Editar gasto</div>
+    <div class="form-row">
+      <div><label>Mes</label><select id="editExpMonth">
+        <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option><option value="3">Abril</option>
+        <option value="4">Mayo</option><option value="5">Junio</option><option value="6">Julio</option><option value="7">Agosto</option>
+        <option value="8">Septiembre</option><option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+      </select></div>
+      <div><label>Tipo</label><select id="editExpType" onchange="toggleEditExpProp()"><option value="general">General</option><option value="propiedad">Por propiedad</option></select></div>
+      <div id="editExpPropWrap"><label>Propiedad</label><select id="editExpProp"></select></div>
+    </div>
+    <div class="form-row">
+      <div><label>Categoría</label><input type="text" id="editExpCat"></div>
+      <div><label>Medio de pago</label><select id="editExpPayment">
+        <option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option>
+        <option value="Tarjeta débito">Tarjeta débito</option><option value="Tarjeta crédito">Tarjeta crédito</option>
+        <option value="Nequi">Nequi</option><option value="Daviplata">Daviplata</option>
+        <option value="Cheque">Cheque</option><option value="Otro">Otro</option>
+      </select></div>
+      <div><label>Monto ($)</label><input type="number" id="editExpAmount" min="0"></div>
+      <div><label>Nota</label><input type="text" id="editExpNote"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeExpModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveEditExpense()"><i class="ti ti-device-floppy"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="saving-ind" id="savingInd"><span class="spin"><i class="ti ti-loader"></i></span> Guardando...</div>
+
+<!-- Scripts al final del body para garantizar carga completa -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const SURL='https://rddqovxastacbvhhwggv.supabase.co';
+const SKEY='sb_publishable_ygBaVy28ZXLhhqRJx5nJZA_YrAi3r4s';
+const sb=supabase.createClient(SURL,SKEY);
+const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const fmt=v=>'$'+Number(v).toLocaleString('es-CO');
+
+let currentUser=null;
+let state={owner:{},properties:[],incomes:[],expenses:[]};
+let incFilterMonth=-1,expFilterType='all';
+let mainChartInst=null,channelChartInst=null,propChartInst=null;
+let saveTimer=null;
+let editingPropId=null,editingIncId=null,editingExpId=null;
+
+async function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');
+  const btn=document.getElementById('loginBtn');
+  if(!u||!p){err.textContent='Ingresa usuario y contraseña';return;}
+  btn.disabled=true;btn.textContent='Verificando...';
+  try{
+    const{data,error}=await sb.from('rc_users').select('*').eq('username',u).eq('password',p).single();
+    if(error||!data){err.textContent='Usuario o contraseña incorrectos.';document.getElementById('loginPass').value='';}
+    else if(data.blocked){err.textContent='Tu acceso ha sido bloqueado. Contacta al administrador.';}
+    else{
+      currentUser=data;
+      await loadUserData();
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appScreen').classList.remove('hidden');
+      err.textContent='';
+      initApp();
+    }
+  }catch(e){err.textContent='Error de conexión. Verifica tu internet.';}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-login"></i> Ingresar';
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!document.getElementById('loginScreen').classList.contains('hidden'))doLogin();
+});
+
+function doLogout(){
+  currentUser=null;state={owner:{},properties:[],incomes:[],expenses:[]};
+  document.getElementById('appScreen').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').textContent='';
+}
+
+async function loadUserData(){
+  try{
+    const{data,error}=await sb.from('rc_data').select('data').eq('user_id',currentUser.id).single();
+    if(!error&&data&&Object.keys(data.data).length>0)state={...state,...data.data};
+  }catch(e){}
+}
+
+async function saveData(){
+  document.getElementById('savingInd').classList.add('show');
+  try{
+    const{error}=await sb.from('rc_data').upsert({user_id:currentUser.id,data:state,updated_at:new Date().toISOString()});
+    const b=document.getElementById('syncBadge');
+    if(error){b.innerHTML='<i class="ti ti-cloud-off"></i> Sin conexión';}
+    else{b.innerHTML='<i class="ti ti-cloud-check"></i> Sincronizado';}
+  }catch(e){}
+  document.getElementById('savingInd').classList.remove('show');
+}
+
+function sched(){clearTimeout(saveTimer);saveTimer=setTimeout(saveData,800);}
+
+function initApp(){
+  const o=state.owner;
+  const isAdmin=currentUser.role==='admin';
+  document.getElementById('topUserName').textContent=(currentUser.full_name||currentUser.username)+(isAdmin?' 👑':'');
+  if(isAdmin){document.getElementById('adminNavItem').classList.remove('hidden');}
+  else{document.getElementById('adminNavItem').classList.add('hidden');}
+  if(o.name){
+    document.getElementById('ownerBar').classList.remove('hidden');
+    const ini=o.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    document.getElementById('ownerAvatar').textContent=ini;
+    document.getElementById('ownerBarText').textContent=`${o.name}${o.cedula?' · C.C. '+o.cedula:''}${o.phone?' · '+o.phone:''}${o.city?' · '+o.city:''}`;
+  }
+  if(o.name)document.getElementById('ownerName').value=o.name;
+  if(o.cedula)document.getElementById('ownerCedula').value=o.cedula;
+  if(o.phone)document.getElementById('ownerPhone').value=o.phone;
+  if(o.email)document.getElementById('ownerEmail').value=o.email;
+  if(o.city)document.getElementById('ownerCity').value=o.city;
+  refreshPropSelects();
+  showTab('dashboard',document.querySelector('.nav-item'));
+}
+
+function showTab(name,el){
+  if(name==='admin'&&currentUser.role!=='admin'){alert('Acceso denegado.');return;}
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.add('hidden'));
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(name==='dashboard')renderDashboard();
+  if(name==='report')renderReport();
+  if(name==='income')renderIncTable();
+  if(name==='expenses')renderExpTable();
+  if(name==='properties')renderPropList();
+  if(name==='admin')renderClientList();
+}
+
+function saveOwner(){
+  state.owner={
+    name:document.getElementById('ownerName').value.trim(),
+    cedula:document.getElementById('ownerCedula').value.trim(),
+    phone:document.getElementById('ownerPhone').value.trim(),
+    email:document.getElementById('ownerEmail').value.trim(),
+    city:document.getElementById('ownerCity').value.trim()
+  };
+  sched();
+  document.getElementById('ownerSaved').textContent='✓ Guardado y sincronizado';
+  setTimeout(()=>document.getElementById('ownerSaved').textContent='',3000);
+  initApp();
+}
+
+function changePass(){
+  const p1=document.getElementById('newPass1').value;
+  const p2=document.getElementById('newPass2').value;
+  const msg=document.getElementById('passSaved');
+  if(!p1||p1.length<4){msg.style.color='#dc2626';msg.textContent='Mínimo 4 caracteres';return;}
+  if(p1!==p2){msg.style.color='#dc2626';msg.textContent='No coinciden';return;}
+  sb.from('rc_users').update({password:p1}).eq('id',currentUser.id).then(({error})=>{
+    if(error){msg.style.color='#dc2626';msg.textContent='Error al cambiar';return;}
+    msg.style.color='#059669';msg.textContent='✓ Contraseña actualizada';
+    document.getElementById('newPass1').value='';document.getElementById('newPass2').value='';
+    setTimeout(()=>msg.textContent='',3000);
+  });
+}
+
+function addProperty(){
+  const name=document.getElementById('propName').value.trim();
+  if(!name){alert('Ingresa un nombre');return;}
+  state.properties.push({id:Date.now(),name,address:document.getElementById('propAddress').value.trim(),city:document.getElementById('propCity').value.trim(),month:document.getElementById('propMonth').value,desc:document.getElementById('propDesc').value.trim()});
+  sched();
+  ['propName','propAddress','propCity','propDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('propMonth').value='';
+  document.getElementById('propSaved').textContent='✓ Propiedad registrada';
+  setTimeout(()=>document.getElementById('propSaved').textContent='',2500);
+  refreshPropSelects();renderPropList();
+}
+
+function openEditProperty(id){
+  const p=state.properties.find(x=>x.id===id);if(!p)return;
+  editingPropId=id;
+  document.getElementById('editPropName').value=p.name;
+  document.getElementById('editPropAddress').value=p.address||'';
+  document.getElementById('editPropCity').value=p.city||'';
+  document.getElementById('editPropMonth').value=p.month||'';
+  document.getElementById('editPropDesc').value=p.desc||'';
+  document.getElementById('modalProp').classList.add('open');
+}
+function closePropModal(){document.getElementById('modalProp').classList.remove('open');editingPropId=null;}
+function saveEditProperty(){
+  const p=state.properties.find(x=>x.id===editingPropId);if(!p)return;
+  p.name=document.getElementById('editPropName').value.trim();
+  p.address=document.getElementById('editPropAddress').value.trim();
+  p.city=document.getElementById('editPropCity').value.trim();
+  p.month=document.getElementById('editPropMonth').value;
+  p.desc=document.getElementById('editPropDesc').value.trim();
+  state.incomes.forEach(i=>{if(i.propId===editingPropId)i.propName=p.name;});
+  state.expenses.forEach(e=>{if(e.propId===editingPropId)e.propName=p.name;});
+  sched();closePropModal();refreshPropSelects();renderPropList();
+}
+function deleteProperty(id){
+  if(!confirm('¿Eliminar esta propiedad y sus movimientos?'))return;
+  state.properties=state.properties.filter(p=>p.id!==id);
+  state.incomes=state.incomes.filter(i=>i.propId!==id);
+  state.expenses=state.expenses.filter(e=>e.propId!==id);
+  sched();refreshPropSelects();renderPropList();
+}
+function renderPropList(){
+  const el=document.getElementById('propList');
+  if(!state.properties.length){el.innerHTML='<div class="empty-state"><i class="ti ti-building-off"></i><br>No hay propiedades</div>';return;}
+  el.innerHTML=`<table><thead><tr><th>Nombre</th><th>Dirección</th><th>Ciudad</th><th>Adquisición</th><th>Acciones</th></tr></thead><tbody>`+
+    state.properties.map(p=>`<tr><td><b>${p.name}</b>${p.desc?'<br><span style="font-size:11px;color:#94a3b8">'+p.desc+'</span>':''}</td><td>${p.address||'-'}</td><td>${p.city||'-'}</td><td>${p.month||'-'} 2026</td><td style="display:flex;gap:6px"><button class="btn-sm btn-edit" onclick="openEditProperty(${p.id})"><i class="ti ti-edit"></i> Editar</button><button class="btn-sm btn-danger" onclick="deleteProperty(${p.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('')+`</tbody></table>`;
+}
+function refreshPropSelects(){
+  const opts=state.properties.length?state.properties.map(p=>`<option value="${p.id}">${p.name}</option>`).join(''):'<option value="">Sin propiedades</option>';
+  ['incProp','expProp','editIncProp','editExpProp'].forEach(id=>document.getElementById(id).innerHTML=opts);
+}
+
+function addIncome(){
+  const month=document.getElementById('incMonth').value;
+  const amount=parseFloat(document.getElementById('incAmount').value);
+  if(month===''){alert('Selecciona el mes');return;}
+  if(!state.properties.length){alert('Registra al menos una propiedad');return;}
+  if(!amount||amount<=0){alert('Monto inválido');return;}
+  const ps=document.getElementById('incProp');
+  state.incomes.push({id:Date.now(),month:parseInt(month),propId:parseInt(ps.value),propName:ps.options[ps.selectedIndex].text,channel:document.getElementById('incChannel').value,payment:document.getElementById('incPayment').value,amount,note:document.getElementById('incNote').value.trim()});
+  sched();
+  document.getElementById('incAmount').value='';document.getElementById('incNote').value='';
+  document.getElementById('incSaved').textContent='✓ Ingreso registrado';
+  setTimeout(()=>document.getElementById('incSaved').textContent='',2500);
+  renderIncTable();
+}
+function openEditIncome(id){
+  const inc=state.incomes.find(x=>x.id===id);if(!inc)return;
+  editingIncId=id;
+  document.getElementById('editIncMonth').value=inc.month;
+  document.getElementById('editIncProp').value=inc.propId;
+  document.getElementById('editIncChannel').value=inc.channel;
+  document.getElementById('editIncPayment').value=inc.payment||'Transferencia';
+  document.getElementById('editIncAmount').value=inc.amount;
+  document.getElementById('editIncNote').value=inc.note||'';
+  document.getElementById('modalInc').classList.add('open');
+}
+function closeIncModal(){document.getElementById('modalInc').classList.remove('open');editingIncId=null;}
+function saveEditIncome(){
+  const inc=state.incomes.find(x=>x.id===editingIncId);if(!inc)return;
+  const ps=document.getElementById('editIncProp');
+  inc.month=parseInt(document.getElementById('editIncMonth').value);
+  inc.propId=parseInt(ps.value);inc.propName=ps.options[ps.selectedIndex].text;
+  inc.channel=document.getElementById('editIncChannel').value;
+  inc.payment=document.getElementById('editIncPayment').value;
+  inc.amount=parseFloat(document.getElementById('editIncAmount').value);
+  inc.note=document.getElementById('editIncNote').value.trim();
+  sched();closeIncModal();renderIncTable();
+}
+function deleteIncome(id){state.incomes=state.incomes.filter(i=>i.id!==id);sched();renderIncTable();}
+function filterIncMonth(m,el){
+  incFilterMonth=m;
+  document.querySelectorAll('#tab-income .tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderIncTable();
+}
+function renderIncTable(){
+  const used=[...new Set(state.incomes.map(i=>i.month))].sort((a,b)=>a-b);
+  document.getElementById('incMonthTabs').innerHTML=used.map(m=>`<div class="tab ${incFilterMonth===m?'active':''}" onclick="filterIncMonth(${m},this)">${MONTHS[m]}</div>`).join('');
+  const data=incFilterMonth===-1?state.incomes:state.incomes.filter(i=>i.month===incFilterMonth);
+  const el=document.getElementById('incTable');
+  if(!data.length){el.innerHTML='<div class="empty-state"><i class="ti ti-cash-off"></i><br>No hay ingresos</div>';return;}
+  const total=data.reduce((s,i)=>s+i.amount,0);
+  const bm={'Airbnb':'airbnb','Directo':'direct','Booking.com':'booking','VRBO':'vrbo','Expedia':'expedia','Facebook':'facebook','WhatsApp/Referido':'whatsapp','Otro':'otro'};
+  el.innerHTML=`<table><thead><tr><th>Mes</th><th>Propiedad</th><th>Canal</th><th>Pago</th><th>Monto</th><th>Nota</th><th>Acciones</th></tr></thead><tbody>`+
+    data.sort((a,b)=>a.month-b.month).map(i=>`<tr><td>${MONTHS[i.month]}</td><td>${i.propName}</td><td><span class="badge badge-${bm[i.channel]||'otro'}">${i.channel}</span></td><td style="font-size:12px;color:#64748b">${i.payment||'-'}</td><td style="color:#059669;font-weight:600">${fmt(i.amount)}</td><td style="color:#94a3b8">${i.note||'-'}</td><td style="display:flex;gap:6px"><button class="btn-sm btn-edit" onclick="openEditIncome(${i.id})"><i class="ti ti-edit"></i></button><button class="btn-sm btn-danger" onclick="deleteIncome(${i.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#f0fdf4"><td colspan="4">Total</td><td style="color:#059669">${fmt(total)}</td><td colspan="2"></td></tr></tbody></table>`;
+}
+
+function toggleExpProp(){document.getElementById('expPropWrap').classList.toggle('hidden',document.getElementById('expType').value!=='propiedad');}
+function toggleEditExpProp(){document.getElementById('editExpPropWrap').style.display=document.getElementById('editExpType').value==='propiedad'?'block':'none';}
+
+function addExpense(){
+  const month=document.getElementById('expMonth').value;
+  const amount=parseFloat(document.getElementById('expAmount').value);
+  const type=document.getElementById('expType').value;
+  if(month===''){alert('Selecciona el mes');return;}
+  if(!amount||amount<=0){alert('Monto inválido');return;}
+  if(type==='propiedad'&&!state.properties.length){alert('Registra al menos una propiedad');return;}
+  const ps=document.getElementById('expProp');
+  state.expenses.push({id:Date.now(),month:parseInt(month),type,propId:type==='propiedad'?parseInt(ps.value):null,propName:type==='propiedad'?ps.options[ps.selectedIndex].text:null,cat:document.getElementById('expCat').value.trim()||'General',payment:document.getElementById('expPayment').value,amount,note:document.getElementById('expNote').value.trim()});
+  sched();
+  ['expAmount','expNote','expCat'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('expSaved').textContent='✓ Gasto registrado';
+  setTimeout(()=>document.getElementById('expSaved').textContent='',2500);
+  renderExpTable();
+}
+function openEditExpense(id){
+  const exp=state.expenses.find(x=>x.id===id);if(!exp)return;
+  editingExpId=id;
+  document.getElementById('editExpMonth').value=exp.month;
+  document.getElementById('editExpType').value=exp.type;
+  toggleEditExpProp();
+  if(exp.propId)document.getElementById('editExpProp').value=exp.propId;
+  document.getElementById('editExpCat').value=exp.cat||'';
+  document.getElementById('editExpPayment').value=exp.payment||'Efectivo';
+  document.getElementById('editExpAmount').value=exp.amount;
+  document.getElementById('editExpNote').value=exp.note||'';
+  document.getElementById('modalExp').classList.add('open');
+}
+function closeExpModal(){document.getElementById('modalExp').classList.remove('open');editingExpId=null;}
+function saveEditExpense(){
+  const exp=state.expenses.find(x=>x.id===editingExpId);if(!exp)return;
+  const ps=document.getElementById('editExpProp');
+  exp.month=parseInt(document.getElementById('editExpMonth').value);
+  exp.type=document.getElementById('editExpType').value;
+  exp.propId=exp.type==='propiedad'?parseInt(ps.value):null;
+  exp.propName=exp.type==='propiedad'?ps.options[ps.selectedIndex].text:null;
+  exp.cat=document.getElementById('editExpCat').value.trim();
+  exp.payment=document.getElementById('editExpPayment').value;
+  exp.amount=parseFloat(document.getElementById('editExpAmount').value);
+  exp.note=document.getElementById('editExpNote').value.trim();
+  sched();closeExpModal();renderExpTable();
+}
+function deleteExpense(id){state.expenses=state.expenses.filter(e=>e.id!==id);sched();renderExpTable();}
+function filterExpType(t,el){
+  expFilterType=t;
+  document.querySelectorAll('#tab-expenses .tab').forEach(x=>x.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderExpTable();
+}
+function renderExpTable(){
+  const data=expFilterType==='all'?state.expenses:state.expenses.filter(e=>e.type===expFilterType);
+  const el=document.getElementById('expTable');
+  if(!data.length){el.innerHTML='<div class="empty-state"><i class="ti ti-receipt-off"></i><br>No hay gastos</div>';return;}
+  const total=data.reduce((s,e)=>s+e.amount,0);
+  el.innerHTML=`<table><thead><tr><th>Mes</th><th>Tipo</th><th>Propiedad</th><th>Categoría</th><th>Pago</th><th>Monto</th><th>Nota</th><th>Acciones</th></tr></thead><tbody>`+
+    data.sort((a,b)=>a.month-b.month).map(e=>`<tr><td>${MONTHS[e.month]}</td><td><span class="badge ${e.type==='general'?'badge-general':'badge-prop'}">${e.type==='general'?'General':'Propiedad'}</span></td><td>${e.propName||'-'}</td><td>${e.cat}</td><td style="font-size:12px;color:#64748b">${e.payment||'-'}</td><td style="color:#dc2626;font-weight:600">${fmt(e.amount)}</td><td style="color:#94a3b8">${e.note||'-'}</td><td style="display:flex;gap:6px"><button class="btn-sm btn-edit" onclick="openEditExpense(${e.id})"><i class="ti ti-edit"></i></button><button class="btn-sm btn-danger" onclick="deleteExpense(${e.id})"><i class="ti ti-trash"></i></button></td></tr>`).join('')+
+    `<tr style="font-weight:700;background:#fff1f2"><td colspan="5">Total</td><td style="color:#dc2626">${fmt(total)}</td><td colspan="2"></td></tr></tbody></table>`;
+}
+
+function getMonthlyData(){
+  return MONTHS.map((_,m)=>({inc:state.incomes.filter(i=>i.month===m).reduce((s,i)=>s+i.amount,0),exp:state.expenses.filter(e=>e.month===m).reduce((s,e)=>s+e.amount,0)}));
+}
+
+function renderDashboard(){
+  const ti=state.incomes.reduce((s,i)=>s+i.amount,0);
+  const te=state.expenses.reduce((s,e)=>s+e.amount,0);
+  const b=ti-te;
+  document.getElementById('summaryCards').innerHTML=`
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-trending-up"></i> Ingresos 2026</div><div class="metric-value income">${fmt(ti)}</div></div>
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-trending-down"></i> Gastos 2026</div><div class="metric-value expense">${fmt(te)}</div></div>
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-scale"></i> Balance neto</div><div class="metric-value ${b>=0?'pos':'neg'}">${fmt(b)}</div></div>
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-building"></i> Propiedades</div><div class="metric-value neutral">${state.properties.length}</div></div>
+  `;
+  const md=getMonthlyData();
+  if(mainChartInst)mainChartInst.destroy();
+  mainChartInst=new Chart(document.getElementById('mainChart'),{
+    type:'bar',
+    data:{labels:MONTHS.map(m=>m.substring(0,3)),datasets:[
+      {label:'Ingresos',data:md.map(d=>d.inc),backgroundColor:'#1D4ED8',borderRadius:5},
+      {label:'Gastos',data:md.map(d=>d.exp),backgroundColor:'#f87171',borderRadius:5},
+      {label:'Balance',data:md.map(d=>d.inc-d.exp),type:'line',borderColor:'#059669',backgroundColor:'rgba(5,150,105,0.08)',tension:0.3,fill:true,borderWidth:2,pointRadius:3,pointBackgroundColor:'#059669'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:12},boxWidth:12,padding:16}}},scales:{y:{ticks:{callback:v=>'$'+Number(v).toLocaleString('es-CO')},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+  });
+  renderCashFlow();
+  const pt=document.getElementById('propSummaryTable');
+  if(!state.properties.length){pt.innerHTML='<div class="empty-state">Sin propiedades</div>';return;}
+  pt.innerHTML=`<table><thead><tr><th>Propiedad</th><th>Ingresos</th><th>Gastos</th><th>Balance</th></tr></thead><tbody>`+
+    state.properties.map(p=>{
+      const pi=state.incomes.filter(i=>i.propId===p.id).reduce((s,i)=>s+i.amount,0);
+      const pe=state.expenses.filter(e=>e.propId===p.id).reduce((s,e)=>s+e.amount,0);
+      const pb=pi-pe;
+      return`<tr><td><b>${p.name}</b></td><td style="color:#059669">${fmt(pi)}</td><td style="color:#dc2626">${fmt(pe)}</td><td style="color:${pb>=0?'#1D4ED8':'#dc2626'};font-weight:700">${fmt(pb)}</td></tr>`;
+    }).join('')+`</tbody></table>`;
+}
+
+function renderCashFlow(){
+  const cfMonth=parseInt(document.getElementById('cashFlowMonth').value);
+  const cfInc=cfMonth===-1?state.incomes:state.incomes.filter(i=>i.month===cfMonth);
+  const cfExp=cfMonth===-1?state.expenses:state.expenses.filter(e=>e.month===cfMonth);
+  const ti=cfInc.reduce((s,i)=>s+i.amount,0);
+  const te=cfExp.reduce((s,e)=>s+e.amount,0);
+  const net=ti-te;
+  const payIn={},payOut={};
+  cfInc.forEach(i=>{const p=i.payment||'No especificado';payIn[p]=(payIn[p]||0)+i.amount;});
+  cfExp.forEach(e=>{const p=e.payment||'No especificado';payOut[p]=(payOut[p]||0)+e.amount;});
+  document.getElementById('cashFlowCards').innerHTML=`
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-arrow-down-circle"></i> Total entradas</div><div class="metric-value income">${fmt(ti)}</div></div>
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-arrow-up-circle"></i> Total salidas</div><div class="metric-value expense">${fmt(te)}</div></div>
+    <div class="metric-card"><div class="metric-label"><i class="ti ti-wallet"></i> Flujo neto</div><div class="metric-value ${net>=0?'pos':'neg'}">${fmt(net)}</div></div>
+  `;
+  const allP=[...new Set([...Object.keys(payIn),...Object.keys(payOut)])];
+  const payRows=allP.map(p=>{const i=payIn[p]||0,o=payOut[p]||0,n=i-o;return`<tr><td><b>${p}</b></td><td style="color:#059669;font-weight:600">${i>0?fmt(i):'-'}</td><td style="color:#dc2626;font-weight:600">${o>0?fmt(o):'-'}</td><td style="color:${n>=0?'#1D4ED8':'#dc2626'};font-weight:700">${fmt(n)}</td></tr>`;}).join('');
+  const allMoves=[
+    ...cfInc.map(i=>({type:'entrada',month:i.month,desc:i.propName,platform:i.channel,payment:i.payment||'-',amount:i.amount,note:i.note||'-'})),
+    ...cfExp.map(e=>({type:'salida',month:e.month,desc:e.propName||'General',platform:e.cat,payment:e.payment||'-',amount:e.amount,note:e.note||'-'}))
+  ].sort((a,b)=>a.month-b.month);
+  const moveRows=allMoves.map(m=>`<tr><td>${MONTHS[m.month]}</td><td><span class="badge ${m.type==='entrada'?'badge-prop':'badge-general'}">${m.type==='entrada'?'Entrada':'Salida'}</span></td><td>${m.desc}</td><td style="font-size:12px;color:#64748b">${m.platform}</td><td style="font-size:12px;color:#64748b">${m.payment}</td><td style="color:${m.type==='entrada'?'#059669':'#dc2626'};font-weight:600">${m.type==='entrada'?'+':'-'}${fmt(m.amount)}</td><td style="color:#94a3b8;font-size:12px">${m.note}</td></tr>`).join('');
+  document.getElementById('cashFlowTable').innerHTML=`
+    <div style="margin-bottom:1rem">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-credit-card"></i> Por medio de pago</div>
+      <div class="table-wrap"><table><thead><tr><th>Medio de pago</th><th>Entradas</th><th>Salidas</th><th>Neto</th></tr></thead><tbody>${payRows||'<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:1rem">Sin movimientos</td></tr>'}</tbody></table></div>
+    </div>
+    <div style="margin-top:1.5rem">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-list-details"></i> Detalle de movimientos</div>
+      <div class="table-wrap"><table><thead><tr><th>Mes</th><th>Tipo</th><th>Descripción</th><th>Canal/Cat.</th><th>Medio pago</th><th>Monto</th><th>Nota</th></tr></thead><tbody>${moveRows||'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:1rem">Sin movimientos</td></tr>'}<tr style="font-weight:700;background:#f8fafc"><td colspan="5">Flujo neto</td><td style="color:${net>=0?'#1D4ED8':'#dc2626'}">${fmt(net)}</td><td></td></tr></tbody></table></div>
+    </div>`;
+}
+
+function renderReport(){
+  const ti=state.incomes.reduce((s,i)=>s+i.amount,0);
+  const te=state.expenses.reduce((s,e)=>s+e.amount,0);
+  const ab=state.incomes.filter(i=>i.channel==='Airbnb').reduce((s,i)=>s+i.amount,0);
+  const di=state.incomes.filter(i=>i.channel==='Directo').reduce((s,i)=>s+i.amount,0);
+  const b=ti-te;
+  document.getElementById('reportCards').innerHTML=`
+    <div class="metric-card"><div class="metric-label">Airbnb</div><div class="metric-value income">${fmt(ab)}</div></div>
+    <div class="metric-card"><div class="metric-label">Directo</div><div class="metric-value income">${fmt(di)}</div></div>
+    <div class="metric-card"><div class="metric-label">Total gastos</div><div class="metric-value expense">${fmt(te)}</div></div>
+    <div class="metric-card"><div class="metric-label">Balance anual</div><div class="metric-value ${b>=0?'pos':'neg'}">${fmt(b)}</div></div>
+  `;
+  if(channelChartInst)channelChartInst.destroy();
+  const chLabels=[...new Set(state.incomes.map(i=>i.channel))];
+  const chData=chLabels.map(c=>state.incomes.filter(i=>i.channel===c).reduce((s,i)=>s+i.amount,0));
+  const colors=['#f97316','#1D4ED8','#0369a1','#15803d','#7e22ce','#1e40af','#166534','#475569'];
+  channelChartInst=new Chart(document.getElementById('channelChart'),{
+    type:'doughnut',
+    data:{labels:chLabels.length?chLabels:['Sin datos'],datasets:[{data:chData.length?chData:[1],backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:12},boxWidth:14,padding:12}}}}
+  });
+  if(propChartInst)propChartInst.destroy();
+  const pn=state.properties.map(p=>p.name);
+  const pi=state.properties.map(p=>state.incomes.filter(i=>i.propId===p.id).reduce((s,i)=>s+i.amount,0));
+  propChartInst=new Chart(document.getElementById('propChart'),{
+    type:'bar',
+    data:{labels:pn.length?pn:['Sin datos'],datasets:[{label:'Ingresos',data:pi.length?pi:[0],backgroundColor:'#1D4ED8',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>'$'+Number(v).toLocaleString('es-CO')},grid:{color:'rgba(0,0,0,0.05)'}},y:{grid:{display:false}}}}
+  });
+  const md=getMonthlyData();
+  const rows=MONTHS.map((m,i)=>{if(md[i].inc===0&&md[i].exp===0)return'';const b=md[i].inc-md[i].exp;return`<tr><td><b>${m}</b></td><td style="color:#059669">${fmt(md[i].inc)}</td><td style="color:#dc2626">${fmt(md[i].exp)}</td><td style="color:${b>=0?'#1D4ED8':'#dc2626'};font-weight:700">${fmt(b)}</td></tr>`;}).filter(Boolean).join('');
+  document.getElementById('monthlyDetailTable').innerHTML=rows?`<table><thead><tr><th>Mes</th><th>Ingresos</th><th>Gastos</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="empty-state">Sin movimientos registrados</div>';
+}
+
+async function createClient(){
+  if(currentUser.role!=='admin'){alert('Acceso denegado.');return;}
+  const username=document.getElementById('newClientUser').value.trim();
+  const password=document.getElementById('newClientPass').value.trim();
+  const full_name=document.getElementById('newClientName').value.trim();
+  const email=document.getElementById('newClientEmail').value.trim();
+  const msg=document.getElementById('clientSaved');
+  if(!username||!password){msg.style.color='#dc2626';msg.textContent='Usuario y contraseña son obligatorios';return;}
+  const id='client-'+Date.now();
+  const{error}=await sb.from('rc_users').insert({id,username,password,full_name,email,role:'client'});
+  if(error){msg.style.color='#dc2626';msg.textContent='Error: el usuario ya existe';return;}
+  await sb.from('rc_data').insert({user_id:id,data:{},updated_at:new Date().toISOString()});
+  msg.style.color='#059669';msg.textContent=`✓ Cliente "${username}" creado exitosamente`;
+  ['newClientUser','newClientPass','newClientName','newClientEmail'].forEach(id=>document.getElementById(id).value='');
+  setTimeout(()=>msg.textContent='',3000);
+  renderClientList();
+}
+
+async function renderClientList(){
+  if(currentUser.role!=='admin'){return;}
+  const el=document.getElementById('clientList');
+  el.innerHTML='<div class="empty-state">Cargando...</div>';
+  const{data,error}=await sb.from('rc_users').select('*').order('created_at');
+  if(error||!data){el.innerHTML='<div class="empty-state">Error cargando clientes</div>';return;}
+  el.innerHTML=`<table><thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`+
+    data.map(u=>`<tr>
+      <td><b>${u.username}</b></td>
+      <td>${u.full_name||'-'}</td>
+      <td>${u.email||'-'}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-client'}">${u.role==='admin'?'Admin':'Cliente'}</span></td>
+      <td>${u.role!=='admin'?`<span class="badge ${u.blocked?'badge-blocked':'badge-active'}">${u.blocked?'Bloqueado':'Activo'}</span>`:'-'}</td>
+      <td style="display:flex;gap:6px">${u.role!=='admin'?`
+        <button class="btn-sm ${u.blocked?'btn-unlock':'btn-lock'}" onclick="toggleBlock('${u.id}',${u.blocked})">
+          <i class="ti ti-${u.blocked?'lock-open':'lock'}"></i> ${u.blocked?'Desbloquear':'Bloquear'}
+        </button>
+        <button class="btn-sm btn-danger" onclick="deleteClient('${u.id}','${u.username}')"><i class="ti ti-trash"></i></button>
+      `:'-'}</td>
+    </tr>`).join('')+`</tbody></table>`;
+}
+
+async function toggleBlock(id, currently){
+  if(currentUser.role!=='admin'){alert('Acceso denegado.');return;}
+  const newVal=!currently;
+  const{error}=await sb.from('rc_users').update({blocked:newVal}).eq('id',id);
+  if(error){alert('Error al actualizar el estado');return;}
+  renderClientList();
+}
+
+async function deleteClient(id,username){
+  if(!confirm(`¿Eliminar al cliente "${username}" y todos sus datos?`))return;
+  await sb.from('rc_data').delete().eq('user_id',id);
+  await sb.from('rc_users').delete().eq('id',id);
+  renderClientList();
+}
+</script>
+</body>
+</html>
