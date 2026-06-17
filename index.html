@@ -97,6 +97,13 @@ tr:hover td{background:#f8fafc}
 </style>
 </head>
 <body>
+<!-- SEGURIDAD - PENDIENTE MANUAL:
+     1) Cambia la contraseña del usuario "admin" en Supabase (la anterior, renta2026, estuvo
+        visible públicamente en esta página y debe darse por comprometida).
+     2) Activa Row Level Security (RLS) con políticas en rc_users, rc_data, rc_state, fp_users
+        y fp_data desde el SQL Editor de Supabase. Sin esto, cualquiera con la URL del proyecto
+        y la "publishable key" de abajo puede leer/escribir esas tablas directamente, sin pasar
+        por esta app. -->
 
 <!-- LOGIN -->
 <div id="loginScreen">
@@ -106,7 +113,7 @@ tr:hover td{background:#f8fafc}
         <div class="brand-icon"><i class="ti ti-building-estate"></i></div>
         <div><div class="brand-name">RentaControl</div><div class="brand-sub">Gestión de propiedades · 2026</div></div>
       </div>
-      <div class="hint-box">Admin: <b>admin</b> / <b>renta2026</b></div>
+      <div class="hint-box">Ingresa con tu usuario y contraseña asignados.</div>
       <div class="fg"><label>Usuario</label><input type="text" id="loginUser" placeholder="usuario" autocomplete="username"></div>
       <div class="fg"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"></div>
       <button class="btn-primary" id="loginBtn" onclick="doLogin()"><i class="ti ti-login"></i> Ingresar</button>
@@ -454,6 +461,24 @@ let mainChartInst=null,channelChartInst=null,propChartInst=null;
 let saveTimer=null;
 let editingPropId=null,editingIncId=null,editingExpId=null;
 
+async function sha256Hex(text){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function randomSalt(){
+  const a=new Uint8Array(16);crypto.getRandomValues(a);
+  return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function hashPassword(pw){
+  const salt=randomSalt();
+  return salt+':'+await sha256Hex(salt+pw);
+}
+async function verifyPassword(pw,stored){
+  if(!stored||!stored.includes(':'))return false;
+  const[salt,hash]=stored.split(':');
+  return(await sha256Hex(salt+pw))===hash;
+}
+
 async function doLogin(){
   const u=document.getElementById('loginUser').value.trim();
   const p=document.getElementById('loginPass').value;
@@ -462,11 +487,20 @@ async function doLogin(){
   if(!u||!p){err.textContent='Ingresa usuario y contraseña';return;}
   btn.disabled=true;btn.textContent='Verificando...';
   try{
-    const{data,error}=await sb.from('rc_users').select('*').eq('username',u).eq('password',p).single();
-    if(error||!data){err.textContent='Usuario o contraseña incorrectos.';document.getElementById('loginPass').value='';}
+    const{data,error}=await sb.from('rc_users').select('*').eq('username',u).single();
+    let valid=false;
+    if(!error&&data){
+      if(data.password&&data.password.includes(':')){
+        valid=await verifyPassword(p,data.password);
+      }else if(data.password===p){
+        valid=true;
+        sb.from('rc_users').update({password:await hashPassword(p)}).eq('id',data.id);
+      }
+    }
+    if(!valid){err.textContent='Usuario o contraseña incorrectos.';document.getElementById('loginPass').value='';}
     else if(data.blocked){err.textContent='Tu acceso ha sido bloqueado. Contacta al administrador.';}
     else{
-      currentUser=data;
+      currentUser=data;delete currentUser.password;
       await loadUserData();
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appScreen').classList.remove('hidden');
@@ -558,18 +592,17 @@ function saveOwner(){
   initApp();
 }
 
-function changePass(){
+async function changePass(){
   const p1=document.getElementById('newPass1').value;
   const p2=document.getElementById('newPass2').value;
   const msg=document.getElementById('passSaved');
   if(!p1||p1.length<4){msg.style.color='#dc2626';msg.textContent='Mínimo 4 caracteres';return;}
   if(p1!==p2){msg.style.color='#dc2626';msg.textContent='No coinciden';return;}
-  sb.from('rc_users').update({password:p1}).eq('id',currentUser.id).then(({error})=>{
-    if(error){msg.style.color='#dc2626';msg.textContent='Error al cambiar';return;}
-    msg.style.color='#059669';msg.textContent='✓ Contraseña actualizada';
-    document.getElementById('newPass1').value='';document.getElementById('newPass2').value='';
-    setTimeout(()=>msg.textContent='',3000);
-  });
+  const{error}=await sb.from('rc_users').update({password:await hashPassword(p1)}).eq('id',currentUser.id);
+  if(error){msg.style.color='#dc2626';msg.textContent='Error al cambiar';return;}
+  msg.style.color='#059669';msg.textContent='✓ Contraseña actualizada';
+  document.getElementById('newPass1').value='';document.getElementById('newPass2').value='';
+  setTimeout(()=>msg.textContent='',3000);
 }
 
 function addProperty(){
@@ -856,7 +889,7 @@ async function createClient(){
   const msg=document.getElementById('clientSaved');
   if(!username||!password){msg.style.color='#dc2626';msg.textContent='Usuario y contraseña son obligatorios';return;}
   const id='client-'+Date.now();
-  const{error}=await sb.from('rc_users').insert({id,username,password,full_name,email,role:'client'});
+  const{error}=await sb.from('rc_users').insert({id,username,password:await hashPassword(password),full_name,email,role:'client'});
   if(error){msg.style.color='#dc2626';msg.textContent='Error: el usuario ya existe';return;}
   await sb.from('rc_data').insert({user_id:id,data:{},updated_at:new Date().toISOString()});
   msg.style.color='#059669';msg.textContent=`✓ Cliente "${username}" creado exitosamente`;
@@ -869,7 +902,7 @@ async function renderClientList(){
   if(currentUser.role!=='admin'){return;}
   const el=document.getElementById('clientList');
   el.innerHTML='<div class="empty-state">Cargando...</div>';
-  const{data,error}=await sb.from('rc_users').select('*').order('created_at');
+  const{data,error}=await sb.from('rc_users').select('id,username,full_name,email,role,blocked,created_at').order('created_at');
   if(error||!data){el.innerHTML='<div class="empty-state">Error cargando clientes</div>';return;}
   el.innerHTML=`<table><thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>`+
     data.map(u=>`<tr>
